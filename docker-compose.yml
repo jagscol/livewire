@@ -1,0 +1,100 @@
+version: "3.7"
+
+networks:
+  livewire-network:
+    driver: bridge
+    name: livewire-network
+
+services:
+  # nginx Service
+  nginx:
+    build:
+      args:
+        uid: 1000
+        gid: 1000
+      context: ./docker/nginx/
+      dockerfile: Dockerfile
+    image: livewire-nginx
+    container_name: livewire-nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 80:80
+    volumes:
+      - ./:/var/www/app
+    networks:
+      - livewire-network
+
+  # php Service
+  app:
+    build:
+      args:
+        uid: 1000
+        gid: 1000
+      context: ./docker/app/
+      dockerfile: Dockerfile
+    image: livewire-app
+    container_name: livewire-app
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/app
+    volumes:
+      - ./:/var/www/app
+    networks:
+      - livewire-network
+
+  # phpmyadmin Service
+  phpmyadmin:
+    build:
+      context: ./docker/phpmyadmin
+      dockerfile: Dockerfile
+    image: livewire-phpmyadmin
+    container_name: livewire-phpmyadmin
+    restart: unless-stopped
+    environment:
+      - PMA_ARBITRARY=1
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 8080:80
+    depends_on:
+      - mysql
+    networks:
+      - livewire-network
+
+  # mysql Service
+  mysql:
+    build:
+      context: ./docker/mysql
+      dockerfile: Dockerfile
+    image: livewire-mysql
+    container_name: livewire-mysql
+    restart: unless-stopped
+    tty: true
+    environment:
+      - MYSQL_DATABASE=livewire
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_TIMEZONE=America/Bogota
+    volumes:
+      - ~/.livewire/mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - livewire-network
+
+  # mailhog Service
+  mailhog:
+    build:
+      context: ./docker/mailhog
+      dockerfile: Dockerfile
+    image: livewire-mailhog
+    container_name: livewire-mailhog
+    restart: unless-stopped
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - livewire-network
