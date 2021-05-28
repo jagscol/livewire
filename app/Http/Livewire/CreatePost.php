@@ -8,7 +8,7 @@ use Livewire\Component;
 class CreatePost extends Component
 {
 
-    public $open = false;
+    public $open = true;
 
     public $title, $content;
 

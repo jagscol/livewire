@@ -24,9 +24,11 @@
             <x-jet-secondary-button wire:click="$set('open', false)">
                 Cancel
             </x-jet-secondary-button>
-            <x-jet-danger-button wire:click="save">
+            <x-jet-danger-button wire:click="save" wire:target='save' wire:loading.attr='disabled'
+                class='disabled:opacity:25'>
                 Create
             </x-jet-danger-button>
+
         </x-slot>
 
     </x-jet-dialog-modal>
