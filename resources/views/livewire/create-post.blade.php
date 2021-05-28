@@ -8,6 +8,13 @@
             Create new post
         </x-slot>
         <x-slot name="content">
+
+            @if ($image)
+                <img src="{{ $image->temporaryUrl() }}" class="mb-4">
+            @else
+                <img src="">
+            @endif
+
             <div class="mb-4">
                 <x-jet-label value="Title" />
                 <x-jet-input type="text" class="w-full" wire:model="title" />
@@ -19,14 +26,20 @@
                 </textarea>
                 <x-jet-input-error for="content" />
             </div>
+            <div>
+                <input type="file" wire:model="image" />
+                <x-jet-input-error for="image" />
+            </div>
         </x-slot>
         <x-slot name="footer">
             <x-jet-secondary-button wire:click="$set('open', false)">
                 Cancel
             </x-jet-secondary-button>
-            <x-jet-danger-button wire:click="save">
+            <x-jet-danger-button wire:click="save" wire:target='save' wire:loading.attr='disabled'
+                class='disabled:opacity:25'>
                 Create
             </x-jet-danger-button>
+
         </x-slot>
 
     </x-jet-dialog-modal>
